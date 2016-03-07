@@ -1,4 +1,5 @@
 import sublime, sublime_plugin, os, time
+from path_resolver import *
 
 class GoToSpecCommand(sublime_plugin.WindowCommand):
 	def open_left(self, file):
@@ -33,41 +34,6 @@ class GoToSpecCommand(sublime_plugin.WindowCommand):
 		filename = filename + "_spec" + extension
 
 		return folder + dirname + filename
-
-	def find_spec(self, folder, dirname, filename, extension):
-		if dirname.startswith('/app'):
-			dirname = dirname[4:]
-
-		dirname = "/spec" + dirname + "/"
-		filename = filename + "_spec" + extension
-
-		spec_file = folder + dirname + filename
-		if os.path.isfile(spec_file):
-			return spec_file
-
-		dirname = dirname.replace('spec/', 'spec/requests/')
-
-		spec_file = folder + dirname + filename
-		if os.path.isfile(spec_file):
-			return spec_file
-
-	def find_test_subject(self, folder, dirname, filename, extension):
-		filename = filename[0:-5]
-		dirname = dirname[5:] + '/'
-
-		test_subject = folder + dirname + filename + extension
-		if os.path.isfile(test_subject):
-			return test_subject
-
-		dirname = '/app' + dirname
-		test_subject = folder + dirname + filename + extension
-		if os.path.isfile(test_subject):
-			return test_subject
-
-		dirname = dirname.replace('/requests', '')
-		test_subject = folder + dirname + filename + extension
-		if os.path.isfile(test_subject):
-			return test_subject
 
 	def underscore_to_class(self, value):
 	    def camelcase():
@@ -134,13 +100,13 @@ end
 
 		if filename.endswith('_spec'):
 			spec_file    = current_folder + current_file
-			subject_file = self.find_test_subject(folder, dirname, filename, extension)
+			subject_file = PathResolver().find_implementation(folder, dirname, filename, extension)
 
 			if spec_file and subject_file:
 				self.open_left(spec_file)
 				self.open_right(subject_file)
 		else:
-			spec_file    = self.find_spec(folder, dirname, filename, extension)
+			spec_file    = PathResolver().find_spec(folder, dirname, filename, extension)
 			subject_file = current_folder + current_file
 
 			if spec_file and subject_file:
