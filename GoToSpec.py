@@ -26,15 +26,6 @@ class GoToSpecCommand(sublime_plugin.WindowCommand):
 		self.window.focus_group(1)
 		self.window.open_file(file)
 
-	def spec_for(self, folder, dirname, filename, extension):
-		if dirname.startswith('/app'):
-			dirname = dirname[4:]
-
-		dirname = "/spec" + dirname + "/"
-		filename = filename + "_spec" + extension
-
-		return folder + dirname + filename
-
 	def underscore_to_class(self, value):
 	    def camelcase():
 	        yield str.capitalize
@@ -108,17 +99,17 @@ end
 				self.open_left(spec_file)
 				self.open_right(subject_file)
 		else:
-			spec_file    = PathResolver().find_verified_spec_path(folder_path_to_current_app, dirname, filename, extension)
-			subject_file = self.window.active_view().file_name()
+			spec_file_path = PathResolver().get_spec_path(folder_path_to_current_app, dirname, filename, extension)
+			has_spec_file  = os.path.isfile(spec_file_path)
+			subject_file 	 = self.window.active_view().file_name()
 
-			if spec_file and subject_file:
+			if has_spec_file:
 				self.open_right(subject_file)
-				self.open_left(spec_file)
+				self.open_left(spec_file_path)
 			else:
-				if not spec_file:
-					self.subject_file  = subject_file
-					self.proposed_spec = self.spec_for(folder_path_to_current_app, dirname, filename, extension)
-					self.pretty_name   = self.spec_for("", dirname, filename, extension)
+				# These are used in the on_done callback
+				self.subject_file  = subject_file
+				self.proposed_spec = spec_file_path
 
-					items = ["Do nothing", ["Create a new spec file", self.pretty_name]]
-					self.window.show_quick_panel(items, self.on_done)
+				items = ["Do nothing", ["Create a new spec file", current_file]]
+				self.window.show_quick_panel(items, self.on_done)
