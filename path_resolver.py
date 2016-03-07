@@ -2,7 +2,7 @@ import os
 
 class PathResolver:
 
-  def find_spec(self, folder, dirname, filename, extension):
+  def find_verified_spec_path(self, folder, dirname, filename, extension):
     if dirname.startswith('/app'):
       dirname = dirname[4:]
 
@@ -19,7 +19,7 @@ class PathResolver:
     if os.path.isfile(spec_file):
       return spec_file
 
-  def find_implementation(self, folder, dirname, filename, extension):
+  def find_verified_implementation_path(self, folder, dirname, filename, extension):
     filename = filename[0:-5]
     dirname = dirname[5:] + '/'
 

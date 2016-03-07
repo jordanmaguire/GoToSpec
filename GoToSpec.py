@@ -100,13 +100,13 @@ end
 
 		if filename.endswith('_spec'):
 			spec_file    = current_folder + current_file
-			subject_file = PathResolver().find_implementation(folder, dirname, filename, extension)
+			subject_file = PathResolver().find_verified_implementation_path(folder, dirname, filename, extension)
 
 			if spec_file and subject_file:
 				self.open_left(spec_file)
 				self.open_right(subject_file)
 		else:
-			spec_file    = PathResolver().find_spec(folder, dirname, filename, extension)
+			spec_file    = PathResolver().find_verified_spec_path(folder, dirname, filename, extension)
 			subject_file = current_folder + current_file
 
 			if spec_file and subject_file:
