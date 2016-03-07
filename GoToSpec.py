@@ -115,7 +115,7 @@ end
 				self.open_right(subject_file)
 				self.open_left(spec_file)
 			else:
-				if subject_file:
+				if not spec_file:
 					self.subject_file  = subject_file
 					self.proposed_spec = self.spec_for(folder_path_to_current_app, dirname, filename, extension)
 					self.pretty_name   = self.spec_for("", dirname, filename, extension)
