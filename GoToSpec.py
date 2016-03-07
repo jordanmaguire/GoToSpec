@@ -59,9 +59,9 @@ end
 		# Only perform the operation if the "Create a new spec file" option is selected. If we
 		# do not compare with 1, pressing ESC will trigger the action to run
 		if option == 1:
-			self.create_spec_file_and_folders(self.proposed_spec)
-			self.open_right(self.subject_file)
-			self.open_left(self.proposed_spec)
+			self.create_spec_file_and_folders(self.new_spec_filepath)
+			self.open_right(self.implementation_filepath)
+			self.open_left(self.new_spec_filepath)
 			self.try_to_append()
 
 	def create_spec_file_and_folders(self, filename):
@@ -92,24 +92,23 @@ end
 		filename, extension = os.path.splitext(os.path.basename(current_file))
 
 		if filename.endswith('_spec'):
-			spec_file    = self.window.active_view().file_name()
-			subject_file = PathResolver().find_verified_implementation_path(folder_path_to_current_app, dirname, filename, extension)
+			verified_implementation_filepath = PathResolver().find_verified_implementation_path(folder_path_to_current_app, dirname, filename, extension)
 
-			if spec_file and subject_file:
-				self.open_left(spec_file)
-				self.open_right(subject_file)
+			if verified_implementation_filepath:
+				self.open_left(self.window.active_view().file_name())
+				self.open_right(verified_implementation_filepath)
 		else:
 			spec_file_path = PathResolver().get_spec_path(folder_path_to_current_app, dirname, filename, extension)
 			has_spec_file  = os.path.isfile(spec_file_path)
-			subject_file 	 = self.window.active_view().file_name()
+			implementation_filepath = self.window.active_view().file_name()
 
 			if has_spec_file:
-				self.open_right(subject_file)
+				self.open_right(implementation_filepath)
 				self.open_left(spec_file_path)
 			else:
 				# These are used in the on_done callback
-				self.subject_file  = subject_file
-				self.proposed_spec = spec_file_path
+				self.implementation_filepath  = implementation_filepath
+				self.new_spec_filepath = spec_file_path
 
 				items = ["Do nothing", ["Create a new spec file", current_file]]
 				self.window.show_quick_panel(items, self.on_done)
