@@ -86,28 +86,30 @@ end
 
 	# Called by Sublime
 	def run(self):
-		current_file = self.window.active_view().file_name()
+		# EG: /path/to/your/rails/application/app/models/user.rb
+		filename_with_full_path = self.window.active_view().file_name()
 
-		folders = self.window.folders()
-		for folder in folders:
-			if current_file.startswith(folder):
-				current_folder = folder
-				current_file   = current_file.replace(folder, "")
+		# EG: /path/to/your/rails/application
+		folder_path_to_current_app = "".join(self.window.folders())
+		# EG: /app/models/user.rb
+		current_file = filename_with_full_path.replace(folder_path_to_current_app, "")
 
+		# dirname:   app/models
+		# filename:  user
+		# extension: .rb
 		dirname  = os.path.dirname(current_file)
-		filename = os.path.basename(current_file)
-		filename, extension = os.path.splitext(filename)
+		filename, extension = os.path.splitext(os.path.basename(current_file))
 
 		if filename.endswith('_spec'):
-			spec_file    = current_folder + current_file
-			subject_file = PathResolver().find_verified_implementation_path(folder, dirname, filename, extension)
+			spec_file    = self.window.active_view().file_name()
+			subject_file = PathResolver().find_verified_implementation_path(folder_path_to_current_app, dirname, filename, extension)
 
 			if spec_file and subject_file:
 				self.open_left(spec_file)
 				self.open_right(subject_file)
 		else:
-			spec_file    = PathResolver().find_verified_spec_path(folder, dirname, filename, extension)
-			subject_file = current_folder + current_file
+			spec_file    = PathResolver().find_verified_spec_path(folder_path_to_current_app, dirname, filename, extension)
+			subject_file = self.window.active_view().file_name()
 
 			if spec_file and subject_file:
 				self.open_right(subject_file)
@@ -115,7 +117,8 @@ end
 			else:
 				if subject_file:
 					self.subject_file  = subject_file
-					self.proposed_spec = self.spec_for(folder, dirname, filename, extension)
+					self.proposed_spec = self.spec_for(folder_path_to_current_app, dirname, filename, extension)
 					self.pretty_name   = self.spec_for("", dirname, filename, extension)
+
 					items = ["Do nothing", ["Create a new spec file", self.pretty_name]]
 					self.window.show_quick_panel(items, self.on_done)
