@@ -7,7 +7,7 @@ class GoToSpecCommand(sublime_plugin.WindowCommand):
 			return
 
 		self.window.run_command('close')
-		self.window.run_command('set_layout', 
+		self.window.run_command('set_layout',
 			{ "cols": [0.0, 0.5, 1.0], "rows": [0.0, 1.0], "cells": [[0,0,1,1],[1,0,2,1]] })
 
 		self.window.focus_group(0)
@@ -19,7 +19,7 @@ class GoToSpecCommand(sublime_plugin.WindowCommand):
 			return
 
 		self.window.run_command('close')
-		self.window.run_command('set_layout', 
+		self.window.run_command('set_layout',
 			{ "cols": [0.0, 0.5, 1.0], "rows": [0.0, 1.0], "cells": [[0,0,1,1],[1,0,2,1]] })
 
 		self.window.focus_group(1)
@@ -70,7 +70,7 @@ class GoToSpecCommand(sublime_plugin.WindowCommand):
 			return test_subject
 
 	def underscore_to_class(self, value):
-	    def camelcase(): 
+	    def camelcase():
 	        yield str.capitalize
 	        while True:
 	            yield str.capitalize
@@ -88,10 +88,10 @@ class GoToSpecCommand(sublime_plugin.WindowCommand):
 			spec_class = self.underscore_to_class(file_name.encode('utf8').replace("_spec.rb", ""))
 
 			edit = view.begin_edit()
-			total = view.insert(edit, 0, """require 'spec_helper'
+			total = view.insert(edit, 0, """require 'rails_helper'
 
 describe %s do
-  
+
 end
 """ % spec_class)
 			view.sel().clear()
@@ -101,21 +101,33 @@ end
 	def on_done(self, option):
 		if option == 0:
 			return
-		
+
 		self.open_right(self.subject_file)
 		self.open_left(self.proposed_spec)
+		self.create_spec_file_and_folders(self.proposed_spec)
 		self.try_to_append()
 
+	def create_spec_file_and_folders(self, filename):
+		base, filename = os.path.split(filename)
+		self.create_folders(base)
+
+	def create_folders(self, base):
+		if not os.path.exists(base):
+			parent = os.path.split(base)[0]
+			if not os.path.exists(parent):
+				self.create_folders(parent)
+			os.mkdir(base)
+
+	# Called by Sublime
 	def run(self):
-		view = self.window.active_view()
-		current_file = view.file_name()
+		current_file = self.window.active_view().file_name()
 
 		folders = self.window.folders()
 		for folder in folders:
 			if current_file.startswith(folder):
 				current_folder = folder
 				current_file   = current_file.replace(folder, "")
-		
+
 		dirname  = os.path.dirname(current_file)
 		filename = os.path.basename(current_file)
 		filename, extension = os.path.splitext(filename)
@@ -141,7 +153,3 @@ end
 					self.pretty_name   = self.spec_for("", dirname, filename, extension)
 					items = ["Do nothing", ["Create a new spec file", self.pretty_name]]
 					self.window.show_quick_panel(items, self.on_done)
-
-
-
-		
