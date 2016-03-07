@@ -99,13 +99,13 @@ end
 			view.end_edit(edit)
 
 	def on_done(self, option):
-		if option == 0:
-			return
-
-		self.open_right(self.subject_file)
-		self.open_left(self.proposed_spec)
-		self.create_spec_file_and_folders(self.proposed_spec)
-		self.try_to_append()
+		# Only perform the operation if the "Create a new spec file" option is selected. If we
+		# do not compare with 1, pressing ESC will trigger the action to run
+		if option == 1:
+			self.create_spec_file_and_folders(self.proposed_spec)
+			self.open_right(self.subject_file)
+			self.open_left(self.proposed_spec)
+			self.try_to_append()
 
 	def create_spec_file_and_folders(self, filename):
 		base, filename = os.path.split(filename)
