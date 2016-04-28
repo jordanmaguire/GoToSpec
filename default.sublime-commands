@@ -1,0 +1,7 @@
+// This file makes the plugin available when pressing command+shift+P
+[
+  {
+    "caption": "Go to Spec",
+    "command": "go_to_spec"
+  }
+]
