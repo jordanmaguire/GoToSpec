@@ -1,10 +1,11 @@
-[
-{
-	"id": "file",
-	"children":
-	[
-	    {"id": "gotospec"},
-	    { "command": "go_to_spec" }
-	]
-}
-]
+// This file makes the Go To Spec command available under the 'File' menu
+[{
+  "id": "file",
+  "children":
+  [
+    {
+      "id": "gotospec",
+      "command": "go_to_spec"
+    }
+  ]
+}]
