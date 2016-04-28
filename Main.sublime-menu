@@ -1,6 +1,6 @@
 // This file makes the Go To Spec command available under the 'File' menu
 [{
-  "id": "file",
+  "id": "goto",
   "children":
   [
     {
