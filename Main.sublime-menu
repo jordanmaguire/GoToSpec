@@ -3,7 +3,7 @@
 	"id": "file",
 	"children":
 	[
-	    {"id": "gotospec"},
+	    { "id": "gotospec" },
 	    { "command": "go_to_spec" }
 	]
 }
